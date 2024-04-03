@@ -21,9 +21,9 @@ jobs:
       - name: 🔧 Check
         run: cargo fmt --all -- --check
 
-  clippy_correctness_checks:
+  check_clippy_and_test:
     runs-on: ubuntu-latest
-    name: 🔧 Clippy correctness checks
+    name: 🔧 Clippy check and tests
     strategy:
       fail-fast: false
       matrix:
