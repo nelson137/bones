@@ -65,11 +65,13 @@ jobs:
             ci-${{ matrix.config.target }}-
 
       - name: 🔧 Check quinn_runtime_bevy
+        if: matrix.config.target != 'wasm32-unknown-unknown'
         env:
           CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
         run: cargo clippy --target ${{ matrix.config.target }} -p quinn_runtime_bevy -- -W clippy::correctness -D warnings
 
       - name: 🔧 Check bones_matchmaker
+        if: matrix.config.target != 'wasm32-unknown-unknown'
         env:
           CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
         run: cargo clippy --target ${{ matrix.config.target }} -p bones_matchmaker -- -W clippy::correctness -D warnings
