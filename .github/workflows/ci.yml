@@ -64,7 +64,17 @@ jobs:
           restore-keys: |
             ci-${{ matrix.config.target }}-
 
-      - name: 🔧 Check
+      - name: 🔧 Check quinn_runtime_bevy
+        env:
+          CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
+        run: cargo clippy --target ${{ matrix.config.target }} -p quinn_runtime_bevy -- -W clippy::correctness -D warnings
+
+      - name: 🔧 Check bones_matchmaker
+        env:
+          CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
+        run: cargo clippy --target ${{ matrix.config.target }} -p bones_matchmaker -- -W clippy::correctness -D warnings
+
+      - name: 🔧 Check workspace
         env:
           CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
         run: cargo clippy --target ${{ matrix.config.target }} -- -W clippy::correctness -D warnings
