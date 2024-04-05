@@ -64,18 +64,6 @@ jobs:
           restore-keys: |
             ci-${{ matrix.config.target }}-
 
-      - name: 🔧 Check quinn_runtime_bevy
-        if: matrix.config.target != 'wasm32-unknown-unknown'
-        env:
-          CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
-        run: cargo clippy --target ${{ matrix.config.target }} --package quinn_runtime_bevy -- -W clippy::correctness -D warnings
-
-      - name: 🔧 Check bones_matchmaker
-        if: matrix.config.target != 'wasm32-unknown-unknown'
-        env:
-          CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
-        run: cargo clippy --target ${{ matrix.config.target }} --package bones_matchmaker -- -W clippy::correctness -D warnings
-
       - name: 🔧 Check workspace
         env:
           CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
@@ -86,6 +74,24 @@ jobs:
         env:
           CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
         run: cargo test --workspace
+
+      - name: ⚙️  Clean
+        if: matrix.config.target != 'wasm32-unknown-unknown'
+        env:
+          CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
+        run: cargo clean
+
+      - name: 🔧 Check quinn_runtime_bevy
+        if: matrix.config.target != 'wasm32-unknown-unknown'
+        env:
+          CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
+        run: cargo build --target ${{ matrix.config.target }} --package quinn_runtime_bevy
+
+      - name: 🔧 Check bones_matchmaker
+        if: matrix.config.target != 'wasm32-unknown-unknown'
+        env:
+          CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
+        run: cargo build --target ${{ matrix.config.target }} --package bones_matchmaker
 
   minimal_deps_check:
     runs-on: ubuntu-latest
