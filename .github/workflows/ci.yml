@@ -21,9 +21,9 @@ jobs:
       - name: 🔧 Check
         run: cargo fmt --all -- --check
 
-  clippy_correctness_checks:
+  check_clippy_and_test:
     runs-on: ubuntu-latest
-    name: 🔧 Clippy correctness checks
+    name: 🔧 Clippy check and tests
     strategy:
       fail-fast: false
       matrix:
@@ -37,7 +37,7 @@ jobs:
       - name: 🧰 Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y -q \
+          sudo apt-get install --no-install-recommends -y -q \
               libasound2-dev \
               libudev-dev
 
@@ -64,7 +64,7 @@ jobs:
           restore-keys: |
             ci-${{ matrix.config.target }}-
 
-      - name: 🔧 Check
+      - name: 🔧 Check workspace
         env:
           CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
         run: cargo clippy --target ${{ matrix.config.target }} -- -W clippy::correctness -D warnings
@@ -74,6 +74,24 @@ jobs:
         env:
           CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
         run: cargo test --workspace
+
+      - name: ⚙️  Clean
+        if: matrix.config.target != 'wasm32-unknown-unknown'
+        env:
+          CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
+        run: cargo clean
+
+      - name: 🔧 Check quinn_runtime_bevy
+        if: matrix.config.target != 'wasm32-unknown-unknown'
+        env:
+          CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
+        run: cargo build --target ${{ matrix.config.target }} --package quinn_runtime_bevy
+
+      - name: 🔧 Check bones_matchmaker
+        if: matrix.config.target != 'wasm32-unknown-unknown'
+        env:
+          CARGO_TARGET_DIR: ${{ matrix.config.target_dir }}
+        run: cargo build --target ${{ matrix.config.target }} --package bones_matchmaker
 
   minimal_deps_check:
     runs-on: ubuntu-latest
@@ -85,7 +103,7 @@ jobs:
       - name: 🧰 Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y -q \
+          sudo apt-get install --no-install-recommends -y -q \
               libasound2-dev \
               libudev-dev
 
@@ -133,7 +151,7 @@ jobs:
       - name: 🧰 Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y -q \
+          sudo apt-get install --no-install-recommends -y -q \
               libasound2-dev \
               libudev-dev
       - name: 🧰 Install Miri
